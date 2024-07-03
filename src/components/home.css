@@ -1,0 +1,89 @@
+.home img {
+    width: 25%;
+    border-radius: 0.2rem;
+    height: 30vh;
+    margin: 1rem;
+    box-shadow: 0px 0px 10px black;
+}
+
+.home img:hover {
+    box-shadow: 0px 0px 10px black;
+}
+
+.home {
+    background-color: antiquewhite;
+    position: relative;
+    padding-top: 8.8rem;
+}
+
+.header {
+    display: flex;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    z-index: 999;
+    background-color: rgb(0, 0, 0);
+    padding: 1rem 0; /* Adjusted to keep the header height consistent */
+    margin-top: 3rem;
+
+}
+
+.header a {
+    color: rgb(255, 255, 255);
+    padding: 10px;
+    text-decoration: none;
+    position: relative;
+    background-color: black;
+    border-radius: 0.5rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+}
+
+.header a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: white; /* Color of the underline */
+    transition: width 0.3s ease;
+}
+
+.header a:hover::after {
+    width: 100%;
+}
+
+/* Add scroll-margin-top to offset the fixed header */
+#car,
+#bike,
+#sports_car,
+#Cycle {
+    scroll-margin-top: 9rem; 
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .home img {
+        width: 80%;
+        margin: 1rem;
+        box-shadow: 0px 0px 10px black;
+    }
+
+    .home {
+        background-color: antiquewhite;
+        margin: 0%;
+        padding-top: 8.5rem; /* Adjust for header height */
+    }
+
+    /* Adjust scroll-margin-top for smaller screens if needed */
+    #car,
+    #bike,
+    #sports_car,
+    #Cycle {
+        scroll-margin-top: 10rem; /* Adjust this value if needed */
+    }
+}
