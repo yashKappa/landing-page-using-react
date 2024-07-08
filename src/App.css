@@ -80,11 +80,33 @@ nav ul li a:hover::after {
 }
 
 .log {
-  background-color: #000000;
+  background-color: #e2aa0e;
   padding: 8px 10px;
   border-radius: 0.2rem;
-  color: white;
+  color: rgb(0, 0, 0);
   text-decoration: none;
+  margin-left: 0.5rem;
+  margin: 0.5rem;
+}
+
+.log:hover{
+  background-color: #21a1f1;
+  color: white;
+}
+
+.logup:hover{
+  background-color: #21a1f1;
+  color: white;
+}
+  
+.logup {
+  background-color: #e2aa0e;
+  padding: 8px 10px;
+  border-radius: 0.2rem;
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+  margin: 0.5rem;
+  margin-left: 0.5rem;
 }
 
 /* Page Section Styles */
@@ -138,6 +160,113 @@ form input[type="submit"]:hover {
   cursor: pointer;
 }
 
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+header .logo{
+  background-color: #000000;
+  padding: 10px;
+  font-size: large;
+  border-top-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  margin-left: 0.5rem;
+}
+
+
+.go {
+  display: flex;
+  align-items: center;
+}
+
+.profile-container {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  background-color: #000000;
+  display: none;
+  position: absolute;
+  right: 0;
+  width: 15rem;
+  box-shadow: 0px 0px 10px rgb(255, 238, 0);
+  z-index: 1;
+  padding: 10px;
+  justify-content: center;
+  text-align: center;
+  border-radius: 0.3rem;
+}
+
+.profile-container:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a {
+  text-decoration: none;
+  display: block;
+}
+
+
+.logout{
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 10px;
+  border-radius: 0.3rem;
+}
+
+.logout:hover{
+  background-color: #eeeeee;
+}
+
+.google {
+  background-color: #000000;
+  padding: 10px;
+  border-radius: 0.2rem;
+  color: rgb(255, 254, 254);
+  text-decoration: none;
+  margin: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; 
+  padding-left: 1.5rem;
+  border: 1px solid white;
+}
+
+.google img {
+  width: 1.5rem;
+  display: flex;
+  position: absolute;
+  margin-top: -0.2rem;
+}
+
+.gogo{
+  z-index: 999;
+  margin-left: 1rem
+}
+
+.google:hover{
+  background-color: rgb(248, 246, 246);
+  color: #000000;
+  border: 1px solid white;
+}
+
+.bgo{
+  display: none;
+}
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
   nav ul {
@@ -146,6 +275,7 @@ form input[type="submit"]:hover {
 
   .hamburger {
     display: flex;
+    z-index: 999;
   }
 
   .mobile-menu ul {
@@ -156,7 +286,7 @@ form input[type="submit"]:hover {
     position: absolute;
     width: 70%;
     margin-top: 53.7rem;
-    margin-left: -12rem;
+    margin-left: -10rem;
     height: 100vh;
     position: fixed;
     z-index: 999;
@@ -178,23 +308,12 @@ form input[type="submit"]:hover {
     margin-left: 1rem;
   }
 
-  .log{
-    display: flex;
-    background-color: black;
-    width: 80px;
-    justify-content: center;
-    padding: 10px;
-  }
 
   .go{
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    margin-bottom: 1rem;
-    margin-top: 2rem;
+    display: none;
   }
 
-  span{
+  .logo{
     background-color: #000000;
     padding: 10px;
     font-size: large;
@@ -202,13 +321,64 @@ form input[type="submit"]:hover {
     border-bottom-right-radius: 2rem;
     margin-left: 2rem;
   }
+
+  .bgo{
+    display: flex;
+    width: 100%;
+    justify-content: end;
+    position: absolute;
+  }
   
+  .profile-container{
+    margin-right: 0.1rem;
+  }
+
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    z-index: 1000;
+  }
+  
+  .bottom-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+  }
+  
+  .bottom-nav li {
+    display: inline;
+  }
+  
+  .bottom-nav a {
+    color: #333;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .bottom-nav a i {
+    font-size: 1.2rem;
+  }
 }
 
-header span{
-  background-color: #000000;
-  padding: 10px;
-  font-size: large;
-  border-top-left-radius: 2rem;
-  border-bottom-right-radius: 2rem;
+
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
 }
+
+
+/* App.css */
+
+

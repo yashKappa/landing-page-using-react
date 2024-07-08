@@ -1,5 +1,3 @@
-/* Login.css */
-
 .page {
     width: 100%;
     height: 100vh;
@@ -14,43 +12,43 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
-}
-
-.login {
+  }
+  
+  .login {
     width: 300px;
     padding: 20px;
     border-radius: 0.5rem;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(3px); 
-    background: linear-gradient(135deg, #ff59596b, #0819ff57); /* Gradient background */
-}
-
-.place {
+    backdrop-filter: blur(3px);
+    background: linear-gradient(135deg, #ff59596b, #0819ff57);
+  }
+  
+  .place {
     display: grid;
     margin: 20px 0;
     color: white;
     font-size: large;
-}
-
-.font {
+  }
+  
+  .font {
     width: 100%;
     text-align: left;
     margin-bottom: 8px;
-}
-
-input[type="email"],
-input[type="password"] {
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
     width: 100%;
     padding: 10px;
     margin: 8px 0;
     border: 1px solid #ccc;
     border-radius: 0.25rem;
     box-sizing: border-box;
-}
-
-.submit {
+  }
+  
+  .submit {
     background-color: aquamarine;
     border: 1px solid black;
     margin-top: 1rem;
@@ -59,9 +57,9 @@ input[type="password"] {
     cursor: pointer;
     width: 100%;
     box-sizing: border-box;
-}
-
-.google-login {
+  }
+  
+  .google-signup {
     background-color: #4285F4;
     color: white;
     border: 1px solid #4285F4;
@@ -76,6 +74,6 @@ input[type="password"] {
     justify-content: center;
   }
   
-  .google-login img {
+  .google-signup img {
     margin-right: 8px;
   }
