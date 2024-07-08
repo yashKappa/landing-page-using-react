@@ -1,19 +1,35 @@
+.top{
+    justify-content: center;
+    text-align: center;
+    align-self: center;
+    display: flex;
+}
+
+h1{
+    background-color: rgb(0, 0, 0);
+    display: flex;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 0.2rem;
+}
+
 .home img {
-    width: 25%;
+    width: 80%;
     border-radius: 0.2rem;
     height: 30vh;
     margin: 1rem;
-    box-shadow: 0px 0px 10px black;
-}
-
-.home img:hover {
-    box-shadow: 0px 0px 10px black;
+    border: 2px solid rgb(124, 122, 122);
+    transition: width 0.3s ease, box-shadow 0.3s ease;
 }
 
 .home {
-    background-color: antiquewhite;
     position: relative;
     padding-top: 8.8rem;
+    color: white;
+}
+
+h3{
+    color: white;
 }
 
 .header {
@@ -57,6 +73,44 @@
     width: 100%;
 }
 
+.home__container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-around;
+  }
+  
+  .vehicle-card {
+    flex: 1 1 calc(20.333% - 40px); /* Ensures three images per row, considering the gap */
+    width: 50%;
+    margin: 10px;
+    text-align: center;
+    padding: 0%;
+    border: 6px double rgb(255, 255, 255);
+    background-color: rgb(31, 30, 30);
+    color: white;
+    border-radius: 0.3rem;
+  }
+
+  .vehicle-card:hover img {
+    width: 85%; 
+    box-shadow: 0px 0px 10px rgb(255, 255, 255);
+  }
+  
+  .vehicle-info {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  /* Add scroll-margin-top to offset the fixed header */
+  #car,
+  #bike,
+  #sports_car,
+  #Cycle {
+    scroll-margin-top: 9rem;
+  }
+  
+
 /* Add scroll-margin-top to offset the fixed header */
 #car,
 #bike,
@@ -67,23 +121,58 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .home img {
-        width: 80%;
-        margin: 1rem;
-        box-shadow: 0px 0px 10px black;
+    .home__container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
     }
-
+  
+    .vehicle-card {
+      flex: 1 1 calc(40% - 10px); 
+      max-width: 40%;
+      margin: 0%;
+      border: none;
+    }
+  
+    .vehicle-card img {
+      width: 100%; /* Full width within their container */
+      height: auto; /* Maintain aspect ratio */
+      margin: 0%;
+      border: none;
+    }
+  
     .home {
-        background-color: antiquewhite;
-        margin: 0%;
-        padding-top: 8.5rem; /* Adjust for header height */
+      background-color: antiquewhite;
+      margin: 0%;
+      padding-top: 8.5rem;
+      margin-bottom: 5rem;
     }
-
+  
     /* Adjust scroll-margin-top for smaller screens if needed */
     #car,
     #bike,
     #sports_car,
     #Cycle {
-        scroll-margin-top: 10rem; /* Adjust this value if needed */
+      scroll-margin-top: 10rem; /* Adjust this value if needed */
     }
-}
+
+    .top{
+        justify-content: center;
+        text-align: center;
+        align-self: center;
+        display: flex;
+    }
+    
+    h1{
+        background-color: rgb(0, 0, 0);
+        display: flex;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 0.2rem;
+        width: 50%;
+        text-align: center;
+        justify-content: center;
+    }
+
+  }
+  
