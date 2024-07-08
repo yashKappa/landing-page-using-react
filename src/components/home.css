@@ -119,6 +119,8 @@ h3{
     scroll-margin-top: 9rem; 
 }
 
+
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .home__container {
@@ -145,7 +147,7 @@ h3{
       background-color: antiquewhite;
       margin: 0%;
       padding-top: 8.5rem;
-      margin-bottom: 5rem;
+      padding-bottom: 6rem;
     }
   
     /* Adjust scroll-margin-top for smaller screens if needed */
