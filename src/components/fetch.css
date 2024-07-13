@@ -1,0 +1,271 @@
+/* fetch.css */
+
+.vehicle-list {
+  width: 80%;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #d4e0f5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  transition: box-shadow 0.3s, transform 0.3s;
+  margin-top: 6rem;
+  margin-bottom: 6rem;
+  overflow: hidden;
+}
+
+.vehicle-list:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.vehicle-list h2 {
+  margin-bottom: 20px;
+  color: #333333;
+  font-family: 'Arial', sans-serif;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.vehicle-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.vehicle-table th,
+.vehicle-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-family: 'Arial', sans-serif;
+  color: #555555;
+}
+
+.vehicle-table th {
+  background-color: #f5f7fa;
+  font-weight: bold;
+  border-radius: 0.3rem;
+}
+
+.vehicle-table tr.reverse {
+  opacity: 0;
+  animation: slideInFromRight 0.5s forwards;
+}
+
+.vehicle-table tr.reverse {
+  opacity: 0;
+  animation: slideInFromLeft 0.5s forwards;
+}
+
+.vehicle-table tr:hover {
+  background-color: #f0f4ff;
+  border-radius: 0.3rem;
+}
+
+.vehicle-table img {
+  max-width: 150px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.vehicle-table img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.loading {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #007bff;
+  margin: 20px 0;
+}
+
+.error {
+  color: red;
+  font-size: 1.2rem;
+  margin: 20px 0;
+  text-align: center;
+}
+
+strong {
+  display: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.sort-options {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.sort-options button {
+  margin: 0 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border: 1px solid black;
+}
+
+.sort-options button.active {
+  background-color: #0056b3;
+  border: none;
+  color: white;
+}
+
+.sort-options button:hover:not(.active) {
+  background-color: #0056b3;
+  color: white;
+}
+
+.action-container button {
+  margin-top: 10px;
+  text-align: center;
+  background-color: #0056b3;
+  color: white;
+  border: none;
+  padding: 10px;
+  font-size: medium;
+  border-radius: 0.3rem;
+  cursor: pointer;
+}
+
+.section-buttons {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.section-buttons button {
+  margin: 0 10px;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border: 1px solid black;
+}
+
+.section-buttons button.active {
+  background-color: #0056b3;
+  border: none;
+  color: white;
+}
+
+.section-buttons button:hover:not(.active) {
+  background-color: #0056b3;
+  color: white;
+}
+
+
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(20%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-20%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .vehicle-list {
+    width: 80%;
+    margin: 50px auto;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+    transition: box-shadow 0.3s, transform 0.3s;
+    margin-top: 6rem;
+    margin-bottom: 6rem;
+  }
+
+  .vehicle-table {
+    border: none;
+  }
+
+  .vehicle-table tbody {
+    border: none;
+  }
+
+  .vehicle-table tr {
+    display: block;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #f9f9f9;
+  }
+
+  .vehicle-table td {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .vehicle-table img {
+    max-width: 90%;
+    height: auto;
+    margin-bottom: 10px;
+    justify-content: center;
+    align-items: center;
+    margin: 5%;
+  }
+
+  .action-container button {
+    margin-top: 10px;
+    text-align: center;
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px;
+    font-size: medium;
+    border-radius: 0.3rem;
+  }
+
+  .vehicle-table th {
+    display: none;
+  }
+
+  strong {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .vehicle-table th,
+  .vehicle-table td {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .loading,
+  .error {
+    font-size: 1rem;
+  }
+}
+
+

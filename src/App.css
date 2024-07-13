@@ -162,11 +162,16 @@ form input[type="submit"]:hover {
 
 header .logo{
   background-color: #000000;
-  padding: 10px;
   font-size: large;
   border-top-left-radius: 2rem;
   border-bottom-right-radius: 2rem;
-  margin-left: 0.5rem;
+  margin-left: 2rem;
+  width: 10rem;
+  margin-right: 3rem;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  justify-content: center;
 }
 
 
@@ -238,10 +243,16 @@ header .logo{
 }
 
 .google img {
-  width: 1.5rem;
+  width: 2rem;
   display: flex;
   position: absolute;
-  margin-top: -0.2rem;
+  margin-top: -0.5rem;
+  margin-left: -0.5rem;
+}
+
+.logo img{
+  width: 3.5rem;
+  margin-right: 0.5rem;
 }
 
 .gogo{
@@ -257,6 +268,52 @@ header .logo{
 
 .bgo{
   display: none;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  border-top: 1px solid #ccc;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px;
+  z-index: 1000;
+}
+
+.bottom-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+}
+
+.bottom-nav li {
+  display: inline;
+}
+
+.bottom-nav a {
+  color: #333;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: background 0.3s ease, color 0.3s ease;
+  padding: 5px;
+}
+
+.bottom-nav a:hover, .bottom-nav a.active {
+  background: linear-gradient(45deg, #e2aa0e, #eed180, #e2aa0e);
+  color: rgb(0, 0, 0);
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.bottom-nav a i {
+  font-size: 1.2rem;
 }
 
 
@@ -279,7 +336,7 @@ header .logo{
     position: absolute;
     width: 70%;
     margin-top: 53.7rem;
-    margin-left: -10rem;
+    margin-left: -18rem;
     height: 100vh;
     position: fixed;
     z-index: 999;
@@ -365,11 +422,6 @@ header .logo{
 }
 
 
-@media (min-width: 768px) {
-  .bottom-nav {
-    display: none;
-  }
-}
 
 
 /* App.css */

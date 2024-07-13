@@ -5,12 +5,13 @@ import './App.css';
 import Home from './components/Home';
 import About from './components/About';
 import Contact from './components/Contact';
-import Feedback from './components/Feedback';
 import Login from './components/Login';
 import Orders from './components/Orders';
 import Signup from './components/Signup';
 import Shopping from './components/Shopping';
 import Cart from './components/Cart';
+import Upload from './components/Upload';
+import Fetch from './components/Fetch';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -26,6 +27,7 @@ function AppContent() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [activeLink, setActiveLink] = useState('/');
   const navigate = useNavigate();
 
   const toggleMobileMenu = () => {
@@ -36,10 +38,10 @@ function AppContent() {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
-        setProfileImage(user.photoURL); // Set the profile image URL
+        setProfileImage(user.photoURL || 'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png'); // Set profile image or default image
       } else {
         setUser(null);
-        setProfileImage(null);
+        setProfileImage('https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png'); // Use default image if no user or profile image
       }
     });
 
@@ -79,6 +81,16 @@ function AppContent() {
     }
   };
 
+  const handleNavClick = (path) => {
+    setActiveLink(path);
+    toggleMobileMenu();
+  };
+
+  
+  const BottomNavClick = (path) => {
+    setActiveLink(path);
+  };
+
   return (
     <div className="App">
       <header>
@@ -89,7 +101,8 @@ function AppContent() {
             <img src='https://i.pinimg.com/originals/26/9d/d1/269dd16fa1f5ff51accd09e7e1602267.png' alt="Open Menu" />
           )}
         </div>
-        <span className='logo'>Aapolo</span>
+        <span className='logo'>
+          <img src='https://www.pngall.com/wp-content/uploads/15/Disney-Cars-PNG-Image.png'></img>Aapolo</span>
         <div className='bgo'>
               {user ? (
                 <div className="profile-container">
@@ -122,23 +135,23 @@ function AppContent() {
         <nav className={isMobileMenuOpen ? 'mobile-menu' : ''}>
           <ul>
             <li>
-              <Link to="/" onClick={toggleMobileMenu}>
+              <Link to="/" className={activeLink === '/' ? 'active' : ''} onClick={() => handleNavClick('/')}>
                 <i className="fas fa-home"></i> Home
               </Link>
             </li>
             <li>
-              <Link to="/about" onClick={toggleMobileMenu}>
+              <Link to="/about" className={activeLink === '/about' ? 'active' : ''} onClick={() => handleNavClick('/about')}>
                 <i className="fas fa-info-circle"></i> About
               </Link>
             </li>
             <li>
-              <Link to="/Contact" onClick={toggleMobileMenu}>
+              <Link to="/Contact" className={activeLink === '/Contact' ? 'active' : ''} onClick={() => handleNavClick('/Contact')}>
                 <i className="fas fa-info-circle"></i> Contact Us
               </Link>
             </li>
             <li>
-              <Link to="/feedback" onClick={toggleMobileMenu}>
-                <i className="fas fa-comments"></i> Feedback
+              <Link to="/Fetch" className={activeLink === '/Fetch' ? 'active' : ''} onClick={() => handleNavClick('/Fetch')}>
+                <i className="fas fa-comments"></i> Fetch
               </Link>
             </li>
             <div className='go'>
@@ -164,7 +177,7 @@ function AppContent() {
                       <i className="fas fa-user-plus"></i> Sign Up
                     </Link>
                     <Link className='google' type="button" onClick={handleGoogleSignup}>
-                    <img src='google.png'></img><span className='gogo'>Continue with google</span>
+                    <img src='https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png'></img><span className='gogo'>Continue with google</span>
                     </Link>
                   </div>
                 </div>
@@ -178,33 +191,38 @@ function AppContent() {
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/Contact" element={<Contact />} />
-        <Route path="/feedback" element={<Feedback />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/shopping" element={<Shopping />} />
         <Route path="/Cart" element={<Cart />} />
+        <Route path="/Upload" element={<Upload />} />
+        <Route path="/Fetch" element={<Fetch />} />
       </Routes>
-
-      <nav className="bottom-nav">
+      <div className="bottom-nav">
         <ul>
           <li>
-            <Link to="/orders">
+            <Link to="/orders" className={activeLink === '/orders' ? 'active' : ''} onClick={() => BottomNavClick('/orders')}>
               <i className="fas fa-box"></i> Orders
             </Link>
           </li>
           <li>
-            <Link to="/shopping">
-              <i className="fas fa-shopping-cart"></i> Shopping
+            <Link to="/shopping" className={activeLink === '/shopping' ? 'active' : ''} onClick={() => BottomNavClick('/shopping')}>
+              <i className="fas fa-shopping-bag"></i> Shopping
             </Link>
           </li>
           <li>
-            <Link to="/Cart">
-              <i className="fas fa-shopping-bag"></i> Cart
+            <Link to="/Cart" className={activeLink === '/Cart' ? 'active' : ''} onClick={() => BottomNavClick('/Cart')}>
+              <i className="fas fa-shopping-cart"></i> Cart
+            </Link>
+          </li>
+          <li>
+            <Link to="/Upload" className={activeLink === '/Upload' ? 'active' : ''} onClick={() => BottomNavClick('/Upload')}>
+              <i className="fas fa-upload"></i> Upload
             </Link>
           </li>
         </ul>
-      </nav>
+      </div>
     </div>
   );
 }
