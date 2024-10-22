@@ -32,29 +32,27 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation(); // Get the current location
 
-
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
   };
 
   useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location.pathname]);
+
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
-        setProfileImage(user.photoURL || 'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png');
+        setProfileImage(user.photoURL || 'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png'); // Set profile image or default image
       } else {
         setUser(null);
-        setProfileImage('https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png');
+        setProfileImage('https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png'); // Use default image if no user or profile image
       }
     });
 
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    setActiveLink(location.pathname);
-  }, [location.pathname]);
-
 
   const handleLogout = async () => {
     try {
@@ -71,9 +69,11 @@ function AppContent() {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
+      // Check if the user already exists in the database
       const userRef = doc(db, "users", user.uid);
       const userDoc = await getDoc(userRef);
       if (!userDoc.exists()) {
+        // Create a new user document in Firestore
         await setDoc(userRef, {
           email: user.email,
           displayName: user.displayName,
@@ -92,6 +92,11 @@ function AppContent() {
     toggleMobileMenu();
   };
 
+  
+  const BottomNavClick = (path) => {
+    setActiveLink(path);
+  };
+
   return (
     <div className="App">
       <header>
@@ -103,38 +108,37 @@ function AppContent() {
           )}
         </div>
         <span className='logo'>
-          <img src='https://www.pngall.com/wp-content/uploads/15/Disney-Cars-PNG-Image.png' alt='Logo' />Aapolo
-        </span>
+          <img src='https://www.pngall.com/wp-content/uploads/15/Disney-Cars-PNG-Image.png' alt='Logo'></img>Aapolo</span>
         <div className='bgo'>
-          {user ? (
-            <div className="profile-container">
-              {profileImage && (
-                <img src={profileImage} alt="Profile" className="profile-image" />
+              {user ? (
+                <div className="profile-container">
+                  {profileImage && (
+                    <img src={profileImage} alt="Profile" className="profile-image" />
+                  )}
+                  <div className="dropdown-content">
+                    <Link className='logout' onClick={() => { handleLogout(); toggleMobileMenu(); }}>
+                      <i className="fas fa-sign-out-alt"></i> Logout
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="profile-container" >
+                  <img src="https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png" alt="Default Profile" className="profile-image" />
+                  <div className="dropdown-content">
+                    <Link className='log' to="/login" >
+                      <i className="fas fa-sign-in-alt"></i> Login
+                    </Link>
+                    <Link className='logup' to="/signup">
+                      <i className="fas fa-user-plus"></i> Sign Up
+                    </Link>
+                    <Link className='google' type="button">
+                    <img src='google.png' alt='img'></img><span className='gogo'>Continue with google</span>
+                    </Link>
+                  </div>
+                </div>
               )}
-              <div className="dropdown-content">
-                <Link className='logout' onClick={() => { handleLogout(); toggleMobileMenu(); }}>
-                  <i className="fas fa-sign-out-alt"></i> Logout
-                </Link>
-              </div>
             </div>
-          ) : (
-            <div className="profile-container">
-              <img src="https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png" alt="Default Profile" className="profile-image" />
-              <div className="dropdown-content">
-                <Link className='log' to="/login" onClick={toggleMobileMenu}>
-                  <i className="fas fa-sign-in-alt"></i> Login
-                </Link>
-                <Link className='logup' to="/signup" onClick={toggleMobileMenu}>
-                  <i className="fas fa-user-plus"></i> Sign Up
-                </Link>
-                <Link className='google' type="button" onClick={handleGoogleSignup}>
-                  <img src='google.png' alt='img' /> <span className='gogo'>Continue with Google</span>
-                </Link>
-              </div>
-            </div>
-          )}
-        </div>
-        <nav className={isMobileMenuOpen ? 'mobile-menu' : ''}>
+            <nav className={isMobileMenuOpen ? 'mobile-menu' : ''}>
           <ul>
             <li>
               <Link to="/" className={activeLink === '/' ? 'Active' : ''} onClick={() => handleNavClick('/')}>
@@ -194,22 +198,22 @@ function AppContent() {
       <div className="bottom-nav">
         <ul>
           <li>
-            <Link to="/orders" className={activeLink === '/orders' ? 'active' : ''} onClick={() => handleNavClick('/orders')}>
+            <Link to="/orders" className={activeLink === '/orders' ? 'active' : ''} onClick={() => BottomNavClick('/orders')}>
               <i className="fas fa-box"></i> Orders
             </Link>
           </li>
           <li>
-            <Link to="/shopping" className={activeLink === '/shopping' ? 'active' : ''} onClick={() => handleNavClick('/shopping')}>
+            <Link to="/shopping" className={activeLink === '/shopping' ? 'active' : ''} onClick={() => BottomNavClick('/shopping')}>
               <i className="fas fa-shopping-bag"></i> Shopping
             </Link>
           </li>
           <li>
-            <Link to="/Cart" className={activeLink === '/Cart' ? 'active' : ''} onClick={() => handleNavClick('/Cart')}>
+            <Link to="/Cart" className={activeLink === '/Cart' ? 'active' : ''} onClick={() => BottomNavClick('/Cart')}>
               <i className="fas fa-shopping-cart"></i> Cart
             </Link>
           </li>
           <li>
-            <Link to="/Upload" className={activeLink === '/Upload' ? 'active' : ''} onClick={() => handleNavClick('/Upload')}>
+            <Link to="/Upload" className={activeLink === '/Upload' ? 'active' : ''} onClick={() => BottomNavClick('/Upload')}>
               <i className="fas fa-upload"></i> Upload
             </Link>
           </li>
