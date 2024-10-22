@@ -14,6 +14,7 @@ function Car() {
           <img src="https://etimg.etb2bimg.com/photo/93698533.cms" alt="Car 4" />
           <img src="https://cdni.autocarindia.com/Utils/ImageResizer.ashx?n=https://cdni.autocarindia.com/Features/_New%20EVs%20Resized%20and%20Watermarked._005.jpeg&c=0" alt="Car 5" />
           <img src="https://images.91wheels.com/assets/b_images/main/models/profile/profile1694686428.jpg?width=360&q=60?w=750&q=60" alt="Car 6" />
+          
         </div>
       </div>
     </div>

@@ -1,235 +1,288 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import './home.css';
+import { db } from './firebase';
+import { doc, setDoc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
 
-function Home() {
+
+function Fetch() {
+  const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortOrder, setSortOrder] = useState('lowToHigh');
+  const [visibleSection, setVisibleSection] = useState('all');
+  const [favorites, setFavorites] = useState([]);
+
+  
+  const userId = 'exampleUserId';
+
+  // Fetch user favorites from Firestore
+  const fetchFavorites = async () => {
+    try {
+      const userDocRef = doc(db, 'users', userId);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+        setFavorites(userData.favorites || []);
+      } else {
+        setFavorites([]);
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFavorites(); // Fetch favorites when component loads
+    fetchData();      // Fetch vehicle data
+  }, []);
+
+  // Handle favorite addition
+  const handleFavorite = async (vehicle) => {
+    if (!favorites.some(fav => fav.id === vehicle.id)) {
+      const updatedFavorites = [...favorites, vehicle];
+      setFavorites(updatedFavorites);
+      
+      try {
+        const userDocRef = doc(db, 'users', userId);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+          await updateDoc(userDocRef, {
+            favorites: arrayUnion(vehicle),
+          });
+        } else {
+          await setDoc(userDocRef, {
+            favorites: [vehicle],
+          });
+        }
+
+        console.log('Favorite added successfully');
+      } catch (error) {
+        console.error('Error saving favorite:', error);
+      }
+    }
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const querySnapshot = await getDocs(collection(db, 'vehicles'));
+      const vehiclesData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      const shuffledVehicles = shuffleArray(vehiclesData); // Shuffle vehicles after fetching
+      setVehicles(shuffledVehicles);
+      setSortOrder('default'); // Reset to default on reload
+    } catch (error) {
+      console.error("Error fetching vehicles: ", error);
+      setError('Failed to fetch vehicles. Please check your internet connection.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to shuffle array (random order)
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleReload = () => {
+    fetchData();
+  };
+
+  const handleBuy = (vehicleId) => {
+    console.log(`Buying vehicle with ID: ${vehicleId}`);
+  };
+
+  const filteredVehicles = vehicles.filter(vehicle =>
+    vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vehicle.model.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  // Function to clean the price string
+  const cleanPrice = (price) => {
+    if (typeof price === 'number') {
+      return price; // If price is already a number, return it directly
+    }
+  
+    if (typeof price === 'string') {
+      return parseInt(price.replace(/,/g, ''), 10); // Remove commas and convert to number
+    }
+  
+    return 0; // If price is undefined or not a valid string, return 0
+  };
+
+  const sortedVehicles = useMemo(() => {
+    if (sortOrder === 'lowToHigh') {
+      return [...filteredVehicles].sort((a, b) => cleanPrice(a.price) - cleanPrice(b.price));
+    } else if (sortOrder === 'highToLow') {
+      return [...filteredVehicles].sort((a, b) => cleanPrice(b.price) - cleanPrice(a.price));
+    }
+    return filteredVehicles; // No sorting when sortOrder is 'default'
+  }, [filteredVehicles, sortOrder]);
+
+  const cars = sortedVehicles.filter(vehicle => 
+    vehicle.vehicleType === 'car' || 
+    vehicle.vehicleType === 'sports_car' || 
+    vehicle.vehicleType === 'sedan' || 
+    vehicle.vehicleType === 'SUV' || 
+    vehicle.vehicleType === 'convertible' ||
+    vehicle.vehicleType === 'hatchback'
+  );
+
+  const bikes = sortedVehicles.filter(vehicle => 
+    vehicle.vehicleType === 'bike' || 
+    vehicle.vehicleType === 'mountain_bike' || 
+    vehicle.vehicleType === 'road_bike' || 
+    vehicle.vehicleType === 'electric_bike'
+  );
+  
+  const cycles = sortedVehicles.filter(vehicle => 
+    vehicle.vehicleType === 'cycle' || 
+    vehicle.vehicleType === 'kids_cycle' || 
+    vehicle.vehicleType === 'adult_cycle' || 
+    vehicle.vehicleType === 'folding_cycle'
+  );
+
+  const handleShare = (vehicle) => {
+    const shareText = `Check out this vehicle: ${vehicle.name}, Model: ${vehicle.model}, Price: ₹${vehicle.price}`;
+    const shareUrl = vehicle.imageUrl; // You can modify this based on what you want to share
+  
+    // Example of sharing functionality (you might implement this differently)
+    if (navigator.share) {
+      navigator.share({
+        title: vehicle.name,
+        text: shareText,
+        url: shareUrl,
+      })
+      .then(() => console.log('Share successful!'))
+      .catch((error) => console.error('Error sharing:', error));
+    } else {
+      // Fallback for browsers that do not support the Web Share API
+      console.log('Share this link:', shareUrl);
+      alert(`Share this link: ${shareUrl}`); // You can customize this behavior
+    }
+  };
+  
+  
+  const renderVehicleGrid = (vehicles) => (
+    <div className="vehicle-grid">
+      {vehicles.map((vehicle) => (
+        <div className="vehicle-box" key={vehicle.id}>
+          <span 
+            className={`favorite-icon ${favorites.some(fav => fav.id === vehicle.id) ? 'active' : ''}`} 
+            onClick={() => handleFavorite(vehicle)}
+          >
+            <i className="fa-solid fa-heart"></i>
+          </span>
+          <span 
+            className="share-icon"
+            onClick={() => handleShare(vehicle)}
+          >
+            <i className="fa-solid fa-share-nodes"></i>
+          </span>
+          <img src={vehicle.imageUrl} alt={vehicle.name} className="vehicle-image" />
+          <div className="vehicle-info">
+            <h4>{vehicle.name}</h4>
+            <p>Model: {vehicle.model}</p>
+            <p>Price: ₹{vehicle.price}</p>
+            <button className="buy-button" onClick={() => handleBuy(vehicle.id)}>View Details</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+  
+
   return (
-    <div className="parent-container">
-      <div className="header">
-        <a href="#car">Car</a>
-        <a href="#bike">Bike</a>
-        <a href="#sports_car">Sports Car</a>
-        <a href="#Cycle">Cycle</a>
+    <div className="vehicle-list">
+      <h2>Vehicle List</h2>
+      
+      <div className="search-container">
+        <div className='btn'>
+          <button className="reload-button" onClick={handleReload}>
+            <i className="fa-solid fa-rotate-right"></i> Reload
+          </button>
+        </div>
+        <input
+          type="text"
+          placeholder="Search by name or model"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
       </div>
-      <div className="home">
-        <div className='top'>
-          <h1 id="car">CAR</h1>
-        </div>
-        <div className="home__container">
-          <div className='vehicle-card'>
-            <img src="https://imgd-ct.aeplcdn.com/370x231/n/cw/ec/132561/taisor-right-front-three-quarter.png?isig=0&q=80" alt="Car 1" />
-            <div className='vehicle-info'>
-              <h3>Toyota</h3>
-              <p>Price: ₹15,00,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNih8DkVoBmHgsj5HLmRpY7twk7YRWFRaNBs0uA3zy_7TPFcSbu9kEOjt_NHMAk5vufHE&usqp=CAU" alt="Car 2" />
-            <div className='vehicle-info'>
-              <h3>Honda</h3>
-              <p>Price: ₹16,00,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://etimg.etb2bimg.com/photo/93698533.cms" alt="Car 4" />
-            <div className='vehicle-info'>
-              <h3>Hyundai</h3>
-              <p>Price: ₹12,00,000</p>
-              <p>Model: 2022</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://cdni.autocarindia.com/Utils/ImageResizer.ashx?n=https://cdni.autocarindia.com/Features/_New%20EVs%20Resized%20and%20Watermarked._005.jpeg&c=0" alt="Car 5" />
-            <div className='vehicle-info'>
-              <h3>Tesla</h3>
-              <p>Price: ₹32,00,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://images.91wheels.com/assets/b_images/main/models/profile/profile1694686428.jpg?width=360&q=60?w=750&q=60" alt="Car 6" />
-            <div className='vehicle-info'>
-              <h3>Ford</h3>
-              <p>Price: ₹18,00,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://images.91wheels.com/assets/b_images/main/models/profile/profile1694686428.jpg?width=360&q=60?w=750&q=60" alt="Car 6" />
-            <div className='vehicle-info'>
-              <h3>Chevrolet</h3>
-              <p>Price: ₹19,00,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-        </div>
 
-        <div className='top'>
-          <h1 id="bike">Bike</h1>
-        </div>
-        <div className="home__container">
-          <div className='vehicle-card'>
-            <img src="https://bd.gaadicdn.com/processedimages/yamaha/mt-15-2-0/source/mt-15-2-06613f885e681c.jpg" alt="Bike 1" />
-            <div className='vehicle-info'>
-              <h3>Yamaha MT-15</h3>
-              <p>Price: ₹3,00,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://5.imimg.com/data5/LX/PM/GLADMIN-68162457/kawasaki-ninja-h2-bike.png" alt="Bike 2" />
-            <div className='vehicle-info'>
-              <h3>Kawasaki Ninja H2</h3>
-              <p>Price: ₹20,00,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://www.carandbike.com/_next/image?url=https%3A%2F%2Fimages.carandbike.com%2Fbike-images%2Fbig%2Ftvs%2Fronin%2Ftvs-ronin.jpg%3Fv%3D10&w=3840&q=75" alt="Bike 3" />
-            <div className='vehicle-info'>
-              <h3>TVS Ronin</h3>
-              <p>Price: ₹35,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://static.toiimg.com/photo/80452572.cms" alt="Bike 4" />
-            <div className='vehicle-info'>
-              <h3>Royal Enfield</h3>
-              <p>Price: ₹4,50,000</p>
-              <p>Model: 2022</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://bd.gaadicdn.com/processedimages/suzuki/hayabusa/640X309/hayabusa6433f99fc006a.jpg" alt="Bike 5" />
-            <div className='vehicle-info'>
-              <h3>Suzuki Hayabusa</h3>
-              <p>Price: ₹10,00,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdlsKoCfSs8FO5J5bbs7Zxyr2ZstcxBaFzO3sAsbJoUCzBsAUnbgC6toG60qxX-Vm0kOw&usqp=CAU" alt="Bike 6" />
-            <div className='vehicle-info'>
-              <h3>Ducati Panigale</h3>
-              <p>Price: ₹22,00,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-        </div>
-
-        <div className='top'>
-          <h1 id="sports_car">Sports_car</h1>
-        </div>
-        <div className="home__container">
-          <div className='vehicle-card'>
-            <img src="https://www.autocar.co.uk/sites/autocar.co.uk/files/styles/body-image/public/8-lotus-emira-top-10_0.jpg?itok=Gji179uE" alt="Sports Car 1" />
-            <div className='vehicle-info'>
-              <h3>Lotus Emira</h3>
-              <p>Price: ₹50,00,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://www.usnews.com/object/image/0000018b-fa28-dc80-a9ef-ffe9f8290001/01-2024-chevrolet-corvette-angular-front-jmv.JPG?update-time=1700709318771&size=responsiveGallery" alt="Sports Car 2" />
-            <div className='vehicle-info'>
-              <h3>Chevrolet Corvette</h3>
-              <p>Price: ₹45,00,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://www.prpnewswire.com/wp-content/uploads/2023/09/New-Sports-Car.jpg" alt="Sports Car 3" />
-            <div className='vehicle-info'>
-              <h3>Porsche 911</h3>
-              <p>Price: ₹70,00,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://t3.ftcdn.net/jpg/05/62/51/76/360_F_562517637_cRcbpMBacqnl89fjdvlGgc77PixfpfOF.jpg" alt="Sports Car 4" />
-            <div className='vehicle-info'>
-              <h3>Ferrari F8</h3>
-              <p>Price: ₹2,00,00,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://akm-img-a-in.tosshub.com/sites/visualstory/wp/2024/03/KEG5ZE7UNVIUDIYHJDIZ37DCXI-scaled.jpg" alt="Sports Car 5" />
-            <div className='vehicle-info'>
-              <h3>Lamborghini Huracan</h3>
-              <p>Price: ₹2,50,00,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://dn1qkewum0hvl.cloudfront.net/blog/wp-content/uploads/2014/05/Dodge_Viper_AME.jpg" alt="Sports Car 6" />
-            <div className='vehicle-info'>
-              <h3>Dodge Viper</h3>
-              <p>Price: ₹60,00,000</p>
-              <p>Model: 2022</p>
-            </div>
-          </div>
-        </div>
-
-        <div className='top'>
-          <h1 id="Cycle">Cycle</h1>
-        </div>
-        <div className="home__container">
-          <div className='vehicle-card'>
-            <img src="https://m.media-amazon.com/images/I/61qAJJ97BzL.jpg" alt="Cycle 1" />
-            <div className='vehicle-info'>
-              <h3>Giant Talon</h3>
-              <p>Price: ₹35,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://m.media-amazon.com/images/I/51IOt7voNjL._AC_UF894,1000_QL80_.jpg" alt="Cycle 2" />
-            <div className='vehicle-info'>
-              <h3>Trek Marlin</h3>
-              <p>Price: ₹50,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://m.media-amazon.com/images/I/515uQT12cVL.jpg" alt="Cycle 3" />
-            <div className='vehicle-info'>
-              <h3>Specialized Rockhopper</h3>
-              <p>Price: ₹48,000</p>
-              <p>Model: 2022</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://5.imimg.com/data5/ANDROID/Default/2023/12/366207198/VG/EN/MR/189843419/product-jpeg-500x500.jpg" alt="Cycle 4" />
-            <div className='vehicle-info'>
-              <h3>Cannondale Trail</h3>
-              <p>Price: ₹60,000</p>
-              <p>Model: 2024</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://images.91wheels.com/news/wp-content/uploads/2021/05/Hercules-roadeo-turner-2016.jpg?width=360&&q=70" alt="Cycle 5" />
-            <div className='vehicle-info'>
-              <h3>Hercules Roadeo</h3>
-              <p>Price: ₹30,000</p>
-              <p>Model: 2023</p>
-            </div>
-          </div>
-          <div className='vehicle-card'>
-            <img src="https://ar-euro.s3.ap-south-1.amazonaws.com/india-webiste-17-02-24/productpage/cardandcartImages/Emx%2Bplus.jpg" alt="Cycle 6" />
-            <div className='vehicle-info'>
-              <h3>Firefox</h3>
-              <p>Price: ₹35,000</p>
-              <p>Model: 2022</p>
-            </div>
-          </div>
-        </div>
+      <div className="sort-options">
+        <button 
+          className={sortOrder === 'lowToHigh' ? 'active' : ''} 
+          onClick={() => setSortOrder('lowToHigh')}
+        >
+          Price: Low to High
+        </button>
+        <button 
+          className={sortOrder === 'highToLow' ? 'active' : ''} 
+          onClick={() => setSortOrder('highToLow')}
+        >
+          Price: High to Low
+        </button>
       </div>
+
+      <div className="section-buttons">
+        <button 
+          className={visibleSection === 'all' ? 'active' : ''} 
+          onClick={() => setVisibleSection('all')}
+        >
+          All
+        </button>
+        <button 
+          className={visibleSection === 'cars' ? 'active' : ''} 
+          onClick={() => setVisibleSection('cars')}
+        >
+          Cars
+        </button>
+        <button 
+          className={visibleSection === 'bikes' ? 'active' : ''} 
+          onClick={() => setVisibleSection('bikes')}
+        >
+          Bikes
+        </button>
+        <button 
+          className={visibleSection === 'cycles' ? 'active' : ''} 
+          onClick={() => setVisibleSection('cycles')}
+        >
+          Cycles
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="loading">Loading...</div>
+      ) : error ? (
+        <div className="error">{error}</div>
+      ) : (
+        <>
+          {visibleSection === 'all' && renderVehicleGrid(sortedVehicles)}
+          {visibleSection === 'cars' && renderVehicleGrid(cars)}
+          {visibleSection === 'bikes' && renderVehicleGrid(bikes)}
+          {visibleSection === 'cycles' && renderVehicleGrid(cycles)}
+        </>
+      )}
     </div>
   );
 }
 
-export default Home;
+export default Fetch;
