@@ -32,13 +32,10 @@ function AppContent() {
   const navigate = useNavigate();
   const location = useLocation(); // Get the current location
 
+
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
   };
-
-  useEffect(() => {
-    setActiveLink(location.pathname);
-  }, [location.pathname]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -53,6 +50,11 @@ function AppContent() {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location.pathname]);
+
 
   const handleLogout = async () => {
     try {
@@ -82,6 +84,7 @@ function AppContent() {
       }
 
       navigate('/');
+      setMobileMenuOpen(false); // Close the menu on successful signup
     } catch (error) {
       console.error("Error signing up with Google:", error);
     }
@@ -92,9 +95,9 @@ function AppContent() {
     toggleMobileMenu();
   };
 
-  
   const BottomNavClick = (path) => {
     setActiveLink(path);
+    setMobileMenuOpen(false); // Close the menu on bottom nav click
   };
 
   return (
@@ -138,48 +141,87 @@ function AppContent() {
                 </div>
               )}
             </div>
-            <nav className={isMobileMenuOpen ? 'mobile-menu' : ''}>
+        <nav className={isMobileMenuOpen ? 'mobile-menu' : ''}>
           <ul>
             <li>
               <Link to="/" className={activeLink === '/' ? 'Active' : ''} onClick={() => handleNavClick('/')}>
-                <i className="fas fa-home"></i> Home
+                <i className="fas fa-home"></i><span className='H'> Home</span>
               </Link>
             </li>
             <li>
               <Link to="/about" className={activeLink === '/about' ? 'Active' : ''} onClick={() => handleNavClick('/about')}>
-                <i className="fas fa-info-circle"></i> About
+                <i className="fas fa-info-circle"></i> <span className='H'> About</span>
               </Link>
             </li>
-            <li>
+            <li className='nav'>
               <Link to="/Contact" className={activeLink === '/Contact' ? 'Active' : ''} onClick={() => handleNavClick('/Contact')}>
-                <i className="fa-solid fa-address-book"></i> Contact Us
+              <i className="fa-solid fa-address-book"></i><span className='H'> Contact Us</span>
               </Link>
             </li>
-            <li>
-              <Link to="/orders" className={activeLink === '/orders' ? 'Active' : ''} onClick={() => handleNavClick('/orders')}>
-                <i className="fas fa-box"></i> Orders
-              </Link>
-            </li>
-            <li>
-              <Link to="/shopping" className={activeLink === '/shopping' ? 'Active' : ''} onClick={() => handleNavClick('/shopping')}>
-                <i className="fas fa-shopping-bag"></i> Shopping
-              </Link>
-            </li>
-            <li>
-              <Link to="/Cart" className={activeLink === '/Cart' ? 'Active' : ''} onClick={() => handleNavClick('/Cart')}>
-                <i className="fas fa-shopping-cart"></i> Cart
-              </Link>
-            </li>
-            <li>
-              <Link to="/Upload" className={activeLink === '/Upload' ? 'Active' : ''} onClick={() => handleNavClick('/Upload')}>
-                <i className="fas fa-upload"></i> Upload
-              </Link>
-            </li>
-            <li>
-              <Link to="/Favorites" className={activeLink === '/Favorites' ? 'Active' : ''} onClick={() => handleNavClick('/Favorites')}>
-                <i className="fas fa-heart"></i> Favorites
-              </Link>
-            </li>
+            <li className='nav'>
+            <Link to="/orders" className={activeLink === '/orders' ? 'Active' : ''} onClick={() => BottomNavClick('/orders')}>
+              <i className="fas fa-box"></i> <span className='H'> Orders</span>
+            </Link>
+          </li>
+          <li className='nav'>
+            <Link to="/shopping" className={activeLink === '/shopping' ? 'Active' : ''} onClick={() => BottomNavClick('/shopping')}>
+              <i className="fas fa-shopping-bag"></i> <span className='H'> Shopping</span>
+            </Link>
+          </li>
+          <li className='nav'>
+            <Link to="/Cart" className={activeLink === '/Cart' ? 'Active' : ''} onClick={() => BottomNavClick('/Cart')}>
+              <i className="fas fa-shopping-cart"></i> <span className='H'> Cart</span>
+            </Link>
+          </li>
+          <li className='nav'>
+            <Link to="/Upload" className={activeLink === '/Upload' ? 'Active' : ''} onClick={() => BottomNavClick('/Upload')}>
+              <i className="fas fa-upload"></i> <span className='H'> Upload</span>
+            </Link>
+          </li>
+          <li className='nav'>
+            <Link to="/Favorites" className={activeLink === '/Favorites' ? 'Active' : ''} onClick={() => BottomNavClick('/Favorites')}>
+              <i className="fas fa-heart"></i> <span className='H'>Favorites</span>
+            </Link>
+          </li>
+            <div className='go'>
+              {user ? (
+                <div className="profile-container">
+                  {profileImage && (
+                    <img src={profileImage} alt="Profile" className="profile-image" />
+                  )}
+                  <div className="dropdown-content">
+                    <Link className='logout' onClick={() => { handleLogout(); toggleMobileMenu(); }}>
+                      <i className="fas fa-sign-out-alt"></i> Logout
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="profile-container">
+                  <img src="https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png" alt="Default Profile" className="profile-image" />
+                  <div className="dropdown-content">
+                    <Link className='log' to="/login" onClick={toggleMobileMenu}>
+                      <i className="fas fa-sign-in-alt"></i> Login
+                    </Link>
+                    <Link className='logup' to="/signup" onClick={toggleMobileMenu}>
+                      <i className="fas fa-user-plus"></i> Sign Up
+                    </Link>
+                    <Link className='google' type="button" onClick={handleGoogleSignup}>
+                    <img src='https://cdn1.iconfinder.com/data/icons/google-s-logo/150/Google_Icons-09-512.png' alt='Img'></img><span className='gogo'>Continue with google</span>
+                    </Link>
+                    <Link className='logup' to="/signup" onClick={toggleMobileMenu}>
+                      <i className="fas fa-user-plus"></i> Profile
+                    </Link>  
+                    <Link className='logup' to="/signup" onClick={toggleMobileMenu}>
+                      <i className="fas fa-user-plus"></i> Product location
+                    </Link>  
+                    <Link className='logup' to="/signup" onClick={toggleMobileMenu}>
+                      <i className="fas fa-user-plus"></i> 
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+            
           </ul>
         </nav>
       </header>

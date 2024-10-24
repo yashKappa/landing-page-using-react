@@ -4,6 +4,8 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import './home.css';
 import { db } from './firebase';
 import { doc, setDoc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth'; // Import Firebase auth
+
 
 
 function Fetch() {
@@ -14,58 +16,61 @@ function Fetch() {
   const [sortOrder, setSortOrder] = useState('lowToHigh');
   const [visibleSection, setVisibleSection] = useState('all');
   const [favorites, setFavorites] = useState([]);
+  const auth = getAuth(); // Initialize Firebase Auth
+
 
   
   const userId = 'exampleUserId';
 
   // Fetch user favorites from Firestore
-  const fetchFavorites = async () => {
+  const fetchFavorites = async (userId) => { // Pass userId from auth
     try {
-      const userDocRef = doc(db, 'users', userId);
-      const userDocSnap = await getDoc(userDocRef);
-
-      if (userDocSnap.exists()) {
-        const userData = userDocSnap.data();
-        setFavorites(userData.favorites || []);
-      } else {
-        setFavorites([]);
-      }
+      const favoritesCollectionRef = collection(db, `users/${userId}/favorites`);
+      const querySnapshot = await getDocs(favoritesCollectionRef);
+      const fetchedFavorites = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setFavorites(fetchedFavorites); // Update state with fetched favorites
     } catch (error) {
       console.error('Error fetching favorites:', error);
     }
   };
+  
 
   useEffect(() => {
-    fetchFavorites(); // Fetch favorites when component loads
-    fetchData();      // Fetch vehicle data
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      fetchFavorites(currentUser.uid);
+    }
+    fetchData(); // Fetch vehicle data
   }, []);
 
   // Handle favorite addition
   const handleFavorite = async (vehicle) => {
+    const currentUser = auth.currentUser; // Get current user
+
+    if (!currentUser) {
+      alert('Please log in or sign up to add favorites.'); // Show alert if user not logged in
+      return;
+    }
+
+    const userId = currentUser.uid;
+    const favoriteDocRef = doc(db, `users/${userId}/favorites`, vehicle.id);
+
     if (!favorites.some(fav => fav.id === vehicle.id)) {
       const updatedFavorites = [...favorites, vehicle];
       setFavorites(updatedFavorites);
-      
+
       try {
-        const userDocRef = doc(db, 'users', userId);
-        const userDocSnap = await getDoc(userDocRef);
-
-        if (userDocSnap.exists()) {
-          await updateDoc(userDocRef, {
-            favorites: arrayUnion(vehicle),
-          });
-        } else {
-          await setDoc(userDocRef, {
-            favorites: [vehicle],
-          });
-        }
-
+        await setDoc(favoriteDocRef, vehicle); // Add vehicle to user's favorites subcollection
         console.log('Favorite added successfully');
       } catch (error) {
         console.error('Error saving favorite:', error);
       }
     }
   };
+
 
   const fetchData = async () => {
     setLoading(true);
@@ -178,16 +183,16 @@ function Fetch() {
     }
   };
   
-  
+   
   const renderVehicleGrid = (vehicles) => (
     <div className="vehicle-grid">
       {vehicles.map((vehicle) => (
         <div className="vehicle-box" key={vehicle.id}>
-          <span 
-            className={`favorite-icon ${favorites.some(fav => fav.id === vehicle.id) ? 'active' : ''}`} 
+          <span
+            className={`favorite-icon ${favorites.some(fav => fav.id === vehicle.id) ? 'active' : ''}`}
             onClick={() => handleFavorite(vehicle)}
           >
-            <i className="fa-solid fa-heart"></i>
+            <i className={`fa-solid fa-heart ${favorites.some(fav => fav.id === vehicle.id) ? 'red' : ''}`}></i>
           </span>
           <span 
             className="share-icon"
@@ -215,7 +220,7 @@ function Fetch() {
       <div className="search-container">
         <div className='btn'>
           <button className="reload-button" onClick={handleReload}>
-            <i className="fa-solid fa-rotate-right"></i> Reload
+            <i className="fa-solid fa-rotate-right"></i><span className='reload'>Reload</span>
           </button>
         </div>
         <input
@@ -225,6 +230,7 @@ function Fetch() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
+        <i class="fa-solid fa-magnifying-glass"></i>
       </div>
 
       <div className="sort-options">

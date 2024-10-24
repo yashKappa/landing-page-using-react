@@ -9,6 +9,8 @@
 
 .vehicle-box {
   flex: 1 1 calc(20% - 20px); /* Default: 5 items per row (for larger screens) */
+  max-width: 250px; /* Set a maximum width for the box */
+  min-height: 300px; /* Set a minimum height to maintain box size */
   background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
@@ -17,8 +19,13 @@
   position: relative;
 }
 
+
 .vehicle-box {
-  position: relative; /* Ensures child elements can be positioned absolutely */
+  position: relative; 
+}
+
+#vehicle{
+  margin-top: 3rem;
 }
 
 .favorite-icon {
@@ -36,6 +43,8 @@
 .favorite-icon.active {
   color: #ff0000; 
 }
+
+
 
 .share-icon {
   color: #000000; /* Default color */
@@ -150,6 +159,7 @@ input:focus{
   left: 10px; /* Align it to the left */
 }
 
+
 .reload-button {
   background-color: #007bff; /* Primary color */
   color: white;
@@ -198,11 +208,45 @@ input:focus{
     margin-bottom: 20px;
     padding: 10px;
     width: 50%;
-    max-width: 310px;
+    max-width: 250px;
     border-radius: 4px;
     box-shadow: inset 0px 4px 8px gray;
+  }
+
+  .search-container{
+    display: flex;
+    position: relative;
+    background-color: #555;
+    justify-content: end;
+    padding: 0%;
+    margin-top: -0.2rem;
+  }
+
+  .reload{
+    display: none;
+  }
+
+  .reload i{
+    display: flex;
+    margin: 0%;
+    padding: 0%;
+  }
+
+  .fa-magnifying-glass{
+    margin-right: 0.8rem;
+  }
+
+  .btn i{
+    margin-right: 0%;
   }
   
 }
 
 
+.fa-magnifying-glass{
+  background-color: #007bff;
+  padding: 10px;
+  color: white;
+  border-radius: 0.3rem;
+  margin-left: 0.5rem;
+}

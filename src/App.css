@@ -329,9 +329,23 @@ header .logo{
   font-size: 1.2rem;
 }
 
+@media (max-width:1259px) {
+  .H{
+    display: none;
+  }
+  
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
+
+  .H{
+    display: flex;
+    position: absolute;
+    top: 0.7rem;
+    left: 2rem;
+  }
+
   nav ul {
     display: none;
     color: #fff;
@@ -369,6 +383,7 @@ header .logo{
 
   .mobile-menu ul li a {
     color: rgb(0, 0, 0);
+    min-width: 150%;
   }
 
   .hamburger {

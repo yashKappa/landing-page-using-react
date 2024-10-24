@@ -1,55 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { doc, getDoc, updateDoc, arrayRemove } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { db } from './firebase';  // Adjust the path based on your directory structure
+import { auth } from './firebase'; // Ensure you import your auth instance
+import './favorites.css';
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
 
   useEffect(() => {
     const fetchFavorites = async () => {
-      const userId = 'exampleUserId'; // Replace with actual user ID from authentication
-  
-      try {
-        const userDocRef = doc(db, 'users', userId);
-        const docSnap = await getDoc(userDocRef);
-        if (docSnap.exists()) {
-          setFavorites(docSnap.data().favorites || []);
-        } else {
-          console.log('No such document!');
+      const currentUser = auth.currentUser; // Get the current user
+
+      if (currentUser) {
+        const userId = currentUser.uid; // Get the authenticated user's ID
+
+        try {
+          const favoritesCollectionRef = collection(db, `users/${userId}/favorites`);
+          const querySnapshot = await getDocs(favoritesCollectionRef);
+
+          const fetchedFavorites = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          setFavorites(fetchedFavorites);
+        } catch (error) {
+          console.error('Error fetching favorites from Firestore: ', error);
         }
-      } catch (error) {
-        console.error('Error fetching favorites from Firestore: ', error);
+      } else {
+        console.log('User not logged in.');
       }
     };
-  
+
     fetchFavorites();
   }, []);
 
   const handleRemoveFavorite = async (vehicleId) => {
-    const userId = 'exampleUserId'; // Replace with actual user ID from authentication
-  
-    try {
-      const updatedFavorites = favorites.filter(fav => fav.id !== vehicleId);
-      setFavorites(updatedFavorites);
-  
-      const userDocRef = doc(db, 'users', userId);
-      const vehicleToRemove = favorites.find(fav => fav.id === vehicleId);
+    const currentUser = auth.currentUser; // Get the current user
 
-      if (vehicleToRemove) {
-        await updateDoc(userDocRef, {
-          favorites: arrayRemove(vehicleToRemove) // Remove the exact vehicle object
-        });
+    if (currentUser) {
+      const userId = currentUser.uid; // Get the authenticated user's ID
+
+      try {
+        const favoriteDocRef = doc(db, `users/${userId}/favorites/${vehicleId}`);
+        await deleteDoc(favoriteDocRef); // Remove the favorite vehicle
+
+        // Update local state
+        setFavorites(favorites.filter(fav => fav.id !== vehicleId));
         console.log('Favorite removed successfully!');
-      } else {
-        console.log('Vehicle not found in favorites');
+      } catch (error) {
+        console.error('Error removing favorite from Firestore: ', error);
       }
-    } catch (error) {
-      console.error('Error removing favorite from Firestore: ', error);
+    } else {
+      console.log('User not logged in. Cannot remove favorite.');
     }
   };
 
   const renderFavorites = () => (
-    <div className="vehicle-grid">
+    <div id='vehicle' className="vehicle-grid">
       {favorites.length > 0 ? (
         favorites.map(vehicle => (
           <div className="vehicle-box" key={vehicle.id}>
@@ -58,7 +66,7 @@ function Favorites() {
               <h4>{vehicle.name}</h4>
               <p>Model: {vehicle.model}</p>
               <p>Price: ₹{vehicle.price}</p>
-              <button className='' onClick={() => handleRemoveFavorite(vehicle.id)}>Remove from Favorites</button>
+              <button onClick={() => handleRemoveFavorite(vehicle.id)}>Remove from Favorites</button>
             </div>
           </div>
         ))
@@ -66,7 +74,7 @@ function Favorites() {
         <p>No favorites added yet!</p>
       )}
     </div>
-  );  
+  );
 
   return (
     <div className="favorites-list">
